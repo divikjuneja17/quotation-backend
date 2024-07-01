@@ -4,9 +4,10 @@ const puppeteer = require("puppeteer");
 const path = require("path");
 const fs = require("fs");
 const ExcelJS = require("exceljs");
+require("dotenv").config();
 
 const app = express();
-const port = 3000;
+const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
@@ -299,55 +300,20 @@ h3 {
 
     // Add new row to Excel file
     headerData = [
-      { header: 'Sales Person', key: 'salesPerson' },
-      { header: 'Customer', key: 'customer' },
-      { header: 'Imp/Exp', key: 'impExp' },
-      { header: 'LCL/FCL/Weight', key: 'lclFclWeight' },
-      { header: 'POL', key: 'pol' },
-      { header: 'POD', key: 'pod' },
-      { header: 'Quantity', key: 'quantity' },
-      { header: 'UNIT', key: 'unit' },
-      { header: 'Status', key: 'status' },
-      { header: 'Remarks', key: 'remarks' }
+      { header: "Sales Person", key: "salesPerson" },
+      { header: "Customer", key: "customer" },
+      { header: "Imp/Exp", key: "impExp" },
+      { header: "LCL/FCL/Weight", key: "lclFclWeight" },
+      { header: "POL", key: "pol" },
+      { header: "POD", key: "pod" },
+      { header: "Quantity", key: "quantity" },
+      { header: "UNIT", key: "unit" },
+      { header: "Status", key: "status" },
+      { header: "Remarks", key: "remarks" },
     ];
 
     data = [
       {
-          salesPerson: quoteData.salesPerson,
-          customer: quoteData.customer,
-          impExp: quoteData.importExport.code,
-          lclFclWeight: quoteData.lclFclWeight,
-          pol: quoteData.from,
-          pod: quoteData.to,
-          quantity: quoteData.items[0].quantity,
-          unit: quoteData.unit,
-          status: quoteData.status,
-          remarks: quoteData.remarks
-        }
-    ]
-
-    const workbook = new ExcelJS.Workbook();
-    const filePath = path.join(__dirname, 'quotes.xlsx');
-    let worksheet;
-
-    if (fs.existsSync(filePath)) {
-      await workbook.xlsx.readFile(filePath);
-      worksheet = workbook.getWorksheet('Quotes');
-    
-      worksheet.columns = [
-            { header: 'Sales Person', key: 'salesPerson' },
-            { header: 'Customer', key: 'customer' },
-            { header: 'Imp/Exp', key: 'impExp' },
-            { header: 'LCL/FCL/Weight', key: 'lclFclWeight' },
-            { header: 'POL', key: 'pol' },
-            { header: 'POD', key: 'pod' },
-            { header: 'Quantity', key: 'quantity' },
-            { header: 'UNIT', key: 'unit' },
-            { header: 'Status', key: 'status' },
-            { header: 'Remarks', key: 'remarks' }
-          ];
-
-      worksheet.addRow({
         salesPerson: quoteData.salesPerson,
         customer: quoteData.customer,
         impExp: quoteData.importExport.code,
@@ -357,23 +323,29 @@ h3 {
         quantity: quoteData.items[0].quantity,
         unit: quoteData.unit,
         status: quoteData.status,
-        remarks: quoteData.remarks
-      });
+        remarks: quoteData.remarks,
+      },
+    ];
 
-    } else {
-      const worksheet = workbook.addWorksheet('Quotes');
+    const workbook = new ExcelJS.Workbook();
+    const filePath = path.join(__dirname, "quotes.xlsx");
+    let worksheet;
+
+    if (fs.existsSync(filePath)) {
+      await workbook.xlsx.readFile(filePath);
+      worksheet = workbook.getWorksheet("Quotes");
 
       worksheet.columns = [
-        { header: 'Sales Person', key: 'salesPerson' },
-        { header: 'Customer', key: 'customer' },
-        { header: 'Imp/Exp', key: 'impExp' },
-        { header: 'LCL/FCL/Weight', key: 'lclFclWeight' },
-        { header: 'POL', key: 'pol' },
-        { header: 'POD', key: 'pod' },
-        { header: 'Quantity', key: 'quantity' },
-        { header: 'UNIT', key: 'unit' },
-        { header: 'Status', key: 'status' },
-        { header: 'Remarks', key: 'remarks' }
+        { header: "Sales Person", key: "salesPerson" },
+        { header: "Customer", key: "customer" },
+        { header: "Imp/Exp", key: "impExp" },
+        { header: "LCL/FCL/Weight", key: "lclFclWeight" },
+        { header: "POL", key: "pol" },
+        { header: "POD", key: "pod" },
+        { header: "Quantity", key: "quantity" },
+        { header: "UNIT", key: "unit" },
+        { header: "Status", key: "status" },
+        { header: "Remarks", key: "remarks" },
       ];
 
       worksheet.addRow({
@@ -386,12 +358,39 @@ h3 {
         quantity: quoteData.items[0].quantity,
         unit: quoteData.unit,
         status: quoteData.status,
-        remarks: quoteData.remarks
+        remarks: quoteData.remarks,
+      });
+    } else {
+      const worksheet = workbook.addWorksheet("Quotes");
+
+      worksheet.columns = [
+        { header: "Sales Person", key: "salesPerson" },
+        { header: "Customer", key: "customer" },
+        { header: "Imp/Exp", key: "impExp" },
+        { header: "LCL/FCL/Weight", key: "lclFclWeight" },
+        { header: "POL", key: "pol" },
+        { header: "POD", key: "pod" },
+        { header: "Quantity", key: "quantity" },
+        { header: "UNIT", key: "unit" },
+        { header: "Status", key: "status" },
+        { header: "Remarks", key: "remarks" },
+      ];
+
+      worksheet.addRow({
+        salesPerson: quoteData.salesPerson,
+        customer: quoteData.customer,
+        impExp: quoteData.importExport.code,
+        lclFclWeight: quoteData.lclFclWeight,
+        pol: quoteData.from,
+        pod: quoteData.to,
+        quantity: quoteData.items[0].quantity,
+        unit: quoteData.unit,
+        status: quoteData.status,
+        remarks: quoteData.remarks,
       });
     }
 
     await workbook.xlsx.writeFile(filePath);
-
   } catch (error) {
     console.error("Error generating PDF:", error);
     res.status(500).send("Error generating PDF");
