@@ -2,6 +2,7 @@ services:
   - type: web
     name: your-service-name
     env: node
+    plan: free
     buildCommand: |
       apt-get update
       apt-get install -y wget --no-install-recommends
@@ -28,7 +29,11 @@ services:
         libgbm-dev \
         curl \
         libnss3-tools \
-        libgconf-2-4
+        libgconf-2-4 \
+        google-chrome-stable
       npm install
     startCommand: npm start
     runtime: node
+    envVars:
+      - key: NODE_ENV
+        value: production
