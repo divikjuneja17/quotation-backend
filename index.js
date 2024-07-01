@@ -261,6 +261,7 @@ h3 {
     console.log("Launching browser...");
     const browser = await puppeteer.launch({
       headless: true,
+      executablePath: "/usr/bin/google-chrome-stable",
       args: [
         "--no-sandbox",
         "--disable-setuid-sandbox",
