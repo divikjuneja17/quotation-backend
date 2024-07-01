@@ -261,10 +261,15 @@ h3 {
     console.log("Launching browser...");
     const browser = await puppeteer.launch({
       headless: true,
-      executablePath: "/usr/bin/google-chrome-stable",
+      executablePath:
+        process.env.NODE_ENV === "production"
+          ? process.env.PUPPETEER_EXECUTABLE_PATH
+          : puppeteer.executablePath(),
       args: [
         "--no-sandbox",
         "--disable-setuid-sandbox",
+        "--single-process",
+        "--no-zygote",
         // Add more args if necessary
       ],
     });
