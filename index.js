@@ -305,7 +305,7 @@ h3 {
     res.send(pdfBuffer);
 
     // Add new row to Excel file
-    headerData = [
+    const headerData = [
       { header: "Sales Person", key: "salesPerson" },
       { header: "Customer", key: "customer" },
       { header: "Imp/Exp", key: "impExp" },
@@ -313,96 +313,61 @@ h3 {
       { header: "POL", key: "pol" },
       { header: "POD", key: "pod" },
       { header: "Quantity", key: "quantity" },
-      { header: "UNIT", key: "unit" },
-      { header: "Status", key: "status" },
-      { header: "Remarks", key: "remarks" },
+      { header: "Price", key: "price" },
+      { header: "Total", key: "total" },
+      { header: "Free Time", key: "freeTime" },
+      { header: "Validity", key: "validity" },
+      { header: "Commodity", key: "commodity" },
+      { header: "Incoterms", key: "incoterms" },
+      { header: "Transit Time", key: "transitTime" },
+      { header: "Sailing", key: "sailing" },
     ];
 
-    data = [
-      {
-        salesPerson: quoteData.salesPerson,
-        customer: quoteData.customer,
-        impExp: quoteData.importExport.code,
-        lclFclWeight: quoteData.lclFclWeight,
-        pol: quoteData.from,
-        pod: quoteData.to,
-        quantity: quoteData.items[0].quantity,
-        unit: quoteData.unit,
-        status: quoteData.status,
-        remarks: quoteData.remarks,
-      },
-    ];
-
-    const workbook = new ExcelJS.Workbook();
     const filePath = path.join(__dirname, "quotes.xlsx");
+
+    console.log(`Checking file existence at path: ${filePath}`);
+    const workbook = new ExcelJS.Workbook();
     let worksheet;
 
     if (fs.existsSync(filePath)) {
+      console.log("File exists. Reading file...");
       await workbook.xlsx.readFile(filePath);
-      worksheet = workbook.getWorksheet("Quotes");
-
-      worksheet.columns = [
-        { header: "Sales Person", key: "salesPerson" },
-        { header: "Customer", key: "customer" },
-        { header: "Imp/Exp", key: "impExp" },
-        { header: "LCL/FCL/Weight", key: "lclFclWeight" },
-        { header: "POL", key: "pol" },
-        { header: "POD", key: "pod" },
-        { header: "Quantity", key: "quantity" },
-        { header: "UNIT", key: "unit" },
-        { header: "Status", key: "status" },
-        { header: "Remarks", key: "remarks" },
-      ];
-
-      worksheet.addRow({
-        salesPerson: quoteData.salesPerson,
-        customer: quoteData.customer,
-        impExp: quoteData.importExport.code,
-        lclFclWeight: quoteData.lclFclWeight,
-        pol: quoteData.from,
-        pod: quoteData.to,
-        quantity: quoteData.items[0].quantity,
-        unit: quoteData.unit,
-        status: quoteData.status,
-        remarks: quoteData.remarks,
-      });
+      worksheet = workbook.getWorksheet(1);
+      console.log("File read successfully.");
     } else {
-      const worksheet = workbook.addWorksheet("Quotes");
-
-      worksheet.columns = [
-        { header: "Sales Person", key: "salesPerson" },
-        { header: "Customer", key: "customer" },
-        { header: "Imp/Exp", key: "impExp" },
-        { header: "LCL/FCL/Weight", key: "lclFclWeight" },
-        { header: "POL", key: "pol" },
-        { header: "POD", key: "pod" },
-        { header: "Quantity", key: "quantity" },
-        { header: "UNIT", key: "unit" },
-        { header: "Status", key: "status" },
-        { header: "Remarks", key: "remarks" },
-      ];
-
-      worksheet.addRow({
-        salesPerson: quoteData.salesPerson,
-        customer: quoteData.customer,
-        impExp: quoteData.importExport.code,
-        lclFclWeight: quoteData.lclFclWeight,
-        pol: quoteData.from,
-        pod: quoteData.to,
-        quantity: quoteData.items[0].quantity,
-        unit: quoteData.unit,
-        status: quoteData.status,
-        remarks: quoteData.remarks,
-      });
+      console.log("File does not exist. Creating new workbook...");
+      worksheet = workbook.addWorksheet("Quotes");
+      worksheet.columns = headerData;
+      console.log("New workbook created.");
     }
 
+    const newRow = worksheet.addRow({
+      salesPerson: quoteData.salesPerson,
+      customer: quoteData.customer,
+      impExp: quoteData.impExp,
+      lclFclWeight: quoteData.lclFclWeight,
+      pol: quoteData.pol,
+      pod: quoteData.pod,
+      quantity: quoteData.quantity,
+      price: quoteData.price,
+      total: quoteData.total,
+      freeTime: quoteData.freeTime,
+      validity: quoteData.validity,
+      commodity: quoteData.commodity,
+      incoterms: quoteData.incoterms,
+      transitTime: quoteData.transitTime,
+      sailing: quoteData.sailing,
+    });
+
+    newRow.commit();
     await workbook.xlsx.writeFile(filePath);
+    console.log("New row added to Excel file.");
   } catch (error) {
-    console.error("Error generating PDF:", error);
-    res.status(500).send("Error generating PDF");
+    console.error("Error processing the request:", error);
+    res.status(500).send("An error occurred while processing the request.");
   }
 });
 
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Server is running on port ${PORT}`);
 });
